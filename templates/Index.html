@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payroll Chatbot</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; }
+        .chat-container { max-width: 600px; margin: 50px auto; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .chat-box { height: 400px; overflow-y: scroll; padding: 20px; background-color: #fff; }
+        .chat-input { display: flex; padding: 10px; border-top: 1px solid #ccc; background-color: #f9f9f9; }
+        .chat-input input { flex-grow: 1; border: 1px solid #ccc; border-radius: 4px; padding: 10px; }
+        .chat-input button { border: none; background-color: #007bff; color: white; padding: 10px 15px; margin-left: 10px; border-radius: 4px; cursor: pointer; }
+        .msg { margin-bottom: 10px; padding: 8px 12px; border-radius: 12px; max-width: 80%; }
+        .user-msg { background-color: #007bff; color: white; align-self: flex-end; margin-left: auto; }
+        .bot-msg { background-color: #e9e9eb; color: #333; align-self: flex-start; }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div id="chat-box" class="chat-box">
+             <div class="msg bot-msg">Hi there! How can I help you with your payroll questions today?</div>
+        </div>
+        <form id="chat-form" class="chat-input">
+            <input type="text" id="user-input" placeholder="Type your message..." autocomplete="off">
+            <button type="submit">Send</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('chat-form').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent page reload
+            
+            const userInputField = document.getElementById('user-input');
+            const userText = userInputField.value.trim();
+
+            if (userText === "") return;
+
+            const chatBox = document.getElementById('chat-box');
+
+            // Display user message
+            let userHtml = `<div class="msg user-msg">${userText}</div>`;
+            chatBox.innerHTML += userHtml;
+            userInputField.value = ''; // Clear input field
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Get bot response
+            const response = await fetch(`/get?msg=${encodeURIComponent(userText)}`);
+            const data = await response.json();
+            const botText = data.response;
+
+            // Display bot message
+            let botHtml = `<div class="msg bot-msg">${botText}</div>`;
+            chatBox.innerHTML += botHtml;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+    </script>
+</body>
+</html>
